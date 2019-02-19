@@ -1,11 +1,14 @@
-{-# LANGUAGE DuplicateRecordFields #-} -- Allow duplicate record fields
 module Lib
     ( someFunc
     ) where
+
+import App
 import qualified Database.HDBC as HDBC
 
+
 someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+someFunc = runHaskETL $
+  liftIO $ putStrLn "someFunc"
 
 data Row = Row [ HDBC.SqlValue ]
 
