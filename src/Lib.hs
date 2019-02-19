@@ -11,27 +11,37 @@ someFunc :: IO ()
 someFunc = runHaskETL $
   liftIO $ putStrLn "someFunc"
 
--- TODO:
--- - Make Row a typeclass instead, since we will have many types of Rows
--- - Generically convert regular Rows to specific Rows and Tables (e.g. Row ->
--- DatacenterRow, Row -> ServerRow, ...)
-data Row = Row [ HDBC.SqlValue ] deriving Show
+-- TODO This is a stub for now, it will have whatever we need to serialize to
+-- Avro eventually
+class DatabaseTable a
 
-data DatacenterTable = DatacenterTable [ DatacenterRow ]
+-- A specific row having particular columns with particular types
+class SpecificRow a where
+  -- TODO make this generic Either String a
+  fromGenericRow :: GenericRow -> Convertible.ConvertResult a
+
 -- example row in datacenter table: datacenter ID, datacenter abbreviation,
 -- ticket queue ID
-data DatacenterRow = DatacenterRow Int String Int
+data DatacenterRow = DatacenterRow Int String Int deriving Show
+instance SpecificRow DatacenterRow where
+  -- TODO This will basically be the same for any SpecificRow. We should figure
+  -- out how to do a default implementation, ideally so anything deriving the
+  -- typeclass can use it.
+  fromGenericRow (GenericRow[dcID, abbr, qID]) = DatacenterRow
+    <$> HDBC.safeFromSql dcID
+    <*> HDBC.safeFromSql abbr
+    <*> HDBC.safeFromSql qID
+  fromGenericRow r = Convertible.convError "Could not parse a datacenter row" r
 
--- TODO make this a generic fn elevating a Row to a specific type of Row
-toDatacenterRow :: Row -> Convertible.ConvertResult DatacenterRow
-toDatacenterRow (Row [dcID, abbr, qID]) = DatacenterRow
-  <$> HDBC.safeFromSql dcID
-  <*> HDBC.safeFromSql abbr
-  <*> HDBC.safeFromSql qID
-toDatacenterRow r = Convertible.convError "Could not parse a datacenter row" r
+data DatacenterTable = DatacenterTable [ DatacenterRow ] deriving Show
+instance DatabaseTable DatacenterTable where
 
-sqlValueToRow :: Maybe [HDBC.SqlValue] -> Maybe Row
-sqlValueToRow v = Row <$> v
+-- A generic row having any number of columns
+data GenericRow = GenericRow [ HDBC.SqlValue ] deriving Show
+
+hdbcToGenericRow :: Maybe [HDBC.SqlValue] -> Maybe GenericRow
+hdbcToGenericRow r = GenericRow <$> r
+
 {-
  - General program flow:
  - - (Possibly) Execute SQL against MSSQL DB from types we define
