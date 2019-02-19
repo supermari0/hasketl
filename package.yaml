@@ -1,0 +1,53 @@
+name:                hasketl
+version:             0.1.0.0
+github:              "supermari0/hasketl"
+license:             Apache 2.0
+author:              "Rebecca Skinner and Mario Villaplana"
+maintainer:          "mario.villaplana@gmail.com"
+copyright:           "2019 Rebecca Skinner and Mario Villaplana"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/hasketl#readme>
+
+# TODO Add Avro
+dependencies:
+- base >= 4.7 && < 5
+- bytestring
+- text
+- transformers
+- HTTP
+
+library:
+  source-dirs: src
+
+executables:
+  hasketl-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hasketl
+
+tests:
+  hasketl-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hasketl
