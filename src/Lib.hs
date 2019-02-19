@@ -33,14 +33,14 @@ instance SpecificRow DatacenterRow where
     <*> HDBC.safeFromSql qID
   fromGenericRow r = Convertible.convError "Could not parse a datacenter row" r
 
-data DatacenterTable = DatacenterTable [ DatacenterRow ] deriving Show
-instance DatabaseTable DatacenterTable where
+newtype DatacenterTable = DatacenterTable [ DatacenterRow ] deriving Show
+instance DatabaseTable DatacenterTable
 
 -- A generic row having any number of columns
-data GenericRow = GenericRow [ HDBC.SqlValue ] deriving Show
+newtype GenericRow = GenericRow [ HDBC.SqlValue ] deriving Show
 
 hdbcToGenericRow :: Maybe [HDBC.SqlValue] -> Maybe GenericRow
-hdbcToGenericRow r = GenericRow <$> r
+hdbcToGenericRow = fmap GenericRow
 
 {-
  - General program flow:
