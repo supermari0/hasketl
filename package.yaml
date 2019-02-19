@@ -1,7 +1,7 @@
 name:                hasketl
 version:             0.1.0.0
 github:              "supermari0/hasketl"
-license:             Apache 2.0
+license:             Apache-2.0
 author:              "Rebecca Skinner and Mario Villaplana"
 maintainer:          "mario.villaplana@gmail.com"
 copyright:           "2019 Rebecca Skinner and Mario Villaplana"
@@ -26,6 +26,7 @@ dependencies:
 - text
 - transformers
 - HTTP
+- HDBC >= 2.4.0.2 && < 2.5
 
 library:
   source-dirs: src
