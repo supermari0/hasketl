@@ -11,6 +11,10 @@ someFunc :: IO ()
 someFunc = runHaskETL $
   liftIO $ putStrLn "someFunc"
 
+-- TODO:
+-- - Make Row a typeclass instead, since we will have many types of Rows
+-- - Generically convert regular Rows to specific Rows and Tables (e.g. Row ->
+-- DatacenterRow, Row -> ServerRow, ...)
 data Row = Row [ HDBC.SqlValue ] deriving Show
 
 data DatacenterTable = DatacenterTable [ DatacenterRow ]
